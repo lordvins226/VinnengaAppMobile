@@ -1,6 +1,14 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
+import 'package:vinnenga/core/enums/user.dart';
+import 'package:vinnenga/core/services/auth_service.dart';
+import 'package:vinnenga/core/services/navigation_service.dart';
+import 'package:vinnenga/ui/animations/loading.dart';
+import 'package:vinnenga/ui/views/home_view.dart';
 import 'package:vinnenga/ui/widgets/button_submit.dart';
+import 'package:vinnenga/ui/widgets/vinnenga_title.dart';
 import 'package:vinnenga/utils/responsive_builder.dart';
 
 class LoginView extends StatefulWidget {
@@ -10,15 +18,15 @@ class LoginView extends StatefulWidget {
 
 class _LoginViewState extends State<LoginView> {
   bool _passwordVisible;
-  TextEditingController _email;
-  TextEditingController _password;
   final _formKey = GlobalKey<FormState>();
   final _key = GlobalKey<ScaffoldState>();
+  String email = "";
+  String password = "";
 
   @override
   void initState() {
     super.initState();
-    _passwordVisible = false;
+    _passwordVisible = true;
   }
 
   Widget _entryField(String title, String inputTitle,
@@ -58,7 +66,8 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _emailPasswordWidget() {
+  Widget _emailPasswordWidget(BuildContext context) {
+    final user = Provider.of<UserProvider>(context);
     return Form(
       key: _formKey,
       child: Column(
@@ -73,16 +82,16 @@ class _LoginViewState extends State<LoginView> {
                 }
                 return null;
               },
-              onChanged: (val) => _email = val,
-              controller: _email,
+              onChanged: (val) => user.email = val,
+              controller: user.email,
               keyboardType: TextInputType.emailAddress),
           _entryField(
             "Mot de Passe",
             "Mot de Passe",
             isPassword: _passwordVisible,
             validator: (val) => val.isEmpty ? 'Entrez un mot de passe' : null,
-            onChanged: (val) => _password = val,
-            controller: _password,
+            onChanged: (val) => user.password = val,
+            controller: user.password,
             iconButton: IconButton(
               highlightColor: Colors.transparent,
               splashColor: Colors.transparent,
@@ -91,7 +100,6 @@ class _LoginViewState extends State<LoginView> {
                 color: Theme.of(context).primaryColor,
               ),
               onPressed: () {
-                // Update the state i.e. toogle the state of passwordVisible variable
                 setState(() {
                   _passwordVisible = !_passwordVisible;
                 });
@@ -105,6 +113,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserProvider>(context);
     return ResponsiveBuilder(
       builder: (context, sizingInformation) {
         return SafeArea(
@@ -123,25 +132,38 @@ class _LoginViewState extends State<LoginView> {
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 20),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                                //crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  _emailPasswordWidget(),
+                                  VinTitle(),
+                                  SizedBox(
+                                    height: 65,
+                                  ),
+                                  _emailPasswordWidget(context),
                                   SizedBox(
                                     height: 20,
                                   ),
-                                  ButtonSubmit(
-                                    title: 'Connexion',
-                                    onPressed: () async {},
-                                  ),
-//                              Container(
-//                                padding: EdgeInsets.symmetric(vertical: 10),
-//                                alignment: Alignment.center,
-//                                child: Text('Mot de Passe Oublié ?',
-//                                    style: TextStyle(
-//                                        fontSize: 14,
-//                                        fontWeight: FontWeight.w500)),
-//                              ),
+                                  user.status == Status.Authenticating
+                                      ? Container(
+                                          width: 40,
+                                          height: 40,
+                                          child: CircularProgressIndicator(),
+                                        )
+                                      : ButtonSubmit(
+                                          title: 'Connexion',
+                                          onPressed: () async {
+                                            if (!await user.signIn()) {
+                                              _key.currentState.showSnackBar(
+                                                  SnackBar(
+                                                      content: Text("Failed")));
+                                              return;
+                                            } else {
+                                              user.clearController();
+                                              Navigator.pushReplacementNamed(
+                                                  context, "/Home");
+                                            }
+                                          },
+                                        ),
                                 ],
                               ),
                             ),

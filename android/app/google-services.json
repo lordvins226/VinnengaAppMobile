@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "290774017606",
+    "firebase_url": "https://vinnenga.firebaseio.com",
+    "project_id": "vinnenga",
+    "storage_bucket": "vinnenga.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:290774017606:android:4b78c44330d1b74686cc47",
+        "android_client_info": {
+          "package_name": "com.lordvins226.vinnenga"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "290774017606-76p5jrcecaeaehv3gbbp62evfo65koq4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyqO4YbgiK2GXBt-hVlsmiNJQ3VzwuQkM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "290774017606-76p5jrcecaeaehv3gbbp62evfo65koq4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

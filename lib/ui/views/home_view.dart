@@ -1,12 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
+import 'package:vinnenga/core/services/auth_service.dart';
+import 'package:vinnenga/ui/views/graph_view.dart';
+import 'package:vinnenga/ui/views/profile_view.dart';
+import 'package:vinnenga/ui/views/scan_view.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
+  @override
+  _HomeViewState createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  int _currentIndex = 0;
+  var currentTab = [HomeBody(), Scan(), StatView(), ProfileView()];
+
+  BottomNavigationBarItem _bottomIcons(IconData icon, String title) {
+    return BottomNavigationBarItem(icon: Icon(icon), title: Text(title));
+  }
+
+  void onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Material(
-        child: SingleChildScrollView(
+      child: Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+            elevation: 5.0,
+            showSelectedLabels: true,
+            showUnselectedLabels: false,
+            selectedItemColor: Colors.green,
+            type: BottomNavigationBarType.fixed,
+            currentIndex: _currentIndex,
+            items: [
+              _bottomIcons(Icons.home, 'Accueil'),
+              _bottomIcons(LineIcons.qrcode, "Scan"),
+              _bottomIcons(LineIcons.bar_chart, "Graphes"),
+              _bottomIcons(Icons.person, 'Profile'),
+            ],
+            onTap: onTabTapped),
+        body: PageView(
+          children: [
+            Stack(
+              children: [
+                currentTab[_currentIndex],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class HomeBody extends StatefulWidget {
+  @override
+  _HomeBodyState createState() => _HomeBodyState();
+}
+
+class _HomeBodyState extends State<HomeBody> {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Scaffold(
+        //backgroundColor: Colors.blueGrey,
+        body: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: <Widget>[
